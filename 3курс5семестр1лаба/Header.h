@@ -12,7 +12,6 @@ struct Node {
 struct list {
     Node* first;
     Node* last;
-    Node* index;
 
     list() : first(nullptr), last(nullptr) {}
 
@@ -27,6 +26,7 @@ struct list {
             last = p;
             return;
         }
+
         last->next = p;
         last = p;
     }
@@ -41,28 +41,20 @@ struct list {
 
         p->next = first;
         first = p;
-       
     }
 
-    void push_by_index(int _val) {
-        Node* p = new Node(_val);
-        int count;
-        cout << "vvedite nomer elementa\t";
-        cin >> count;
-
-        if (is_empty()) {
-            first = p;
-            last = p;
-            return;
+    bool add_by_index(int index, int _val) {
+        if (is_empty()) return false;
+        Node* p = first;
+        for (int i = 0; i < index - 1; i++) {
+            p = p->next;
+            if (!p) return false;
         }
+        Node* o = new Node(_val);
 
-        for (int i = 0; i < size(); i++) {
-            if (i == count){
-                p->next = index;
-                first = p;
-            }
-        }
-        
+        o->next = p->next;
+        p->next = o;
+        return true;
     }
 
 
@@ -73,7 +65,7 @@ struct list {
             cout << p->val << " ";
             p = p->next;
         }
-        cout << endl;
+        cout << endl << flush;
     }
 
     Node* find(int _val) {
@@ -95,50 +87,44 @@ struct list {
             remove_first();
             return;
         }
+
         Node* p = first;
         while (p->next != last) p = p->next;
+
         p->next = nullptr;
         delete last;
         last = p;
     }
 
-    void remove_by_index() {
-        if (is_empty()) return;
+    bool remove_by_index(int index) {
+        if (is_empty()) return false;
+        if (size() > index) return false;
         if (first == last) {
             remove_first();
-            return;
+            return true;
         }
-        for (int i = 0; i < size(); i++) {
-
+        Node* p = first;
+        for (int i = 0; i < index - 1; i++) {
+            p = p->next;
+            if (!p) return false;
         }
+        Node* o = p->next;
+        p->next = p->next->next;
+        delete o;
     }
 
 
-    void remove(int _val) {
+    void remove() {
         if (is_empty()) return;
-        if (first->val == _val) {
-            remove_first();
-            return;
+        Node* p = first;
+        for (int i = 0; i < size(); i++) {
+            first = first->next;
+            delete p;
+            p = first;
         }
-        else if (last->val == _val) {
-            remove_last();
-            return;
-        }
-        Node* slow = first;
-        Node* fast = first->next;
-        while (fast && fast->val != _val) {
-            fast = fast->next;
-            slow = slow->next;
-        }
-        if (!fast) {
-            cout << "This element does not exist" << endl;
-            return;
-        }
-        slow->next = fast->next;
-        delete fast;
     }
 
-    Node* operator[] (const int index) {
+    Node* polychenie(int index) {
         if (is_empty()) return nullptr;
         Node* p = first;
         for (int i = 0; i < index; i++) {
@@ -162,14 +148,14 @@ struct list {
         return n;
     }
 
-    bool is_list_existing(list other){
+    bool is_list_existing(list other) {
         Node* p = first;
         bool ok = false;
-        for (int i = 0; i < size() - other.size() + 1; i++){
+        for (int i = 0; i < size() - other.size() + 1; i++) {
             Node* p1 = p;
             Node* p2 = other.first;
             bool ok1 = true;
-            for (int j = 0; j < other.size(); j++){
+            for (int j = 0; j < other.size(); j++) {
                 if (p1->val == p2->val)
                 {
                     p1 = p1->next;
@@ -189,5 +175,16 @@ struct list {
             p = p->next;
         }
         return ok;
+    }
+
+    bool zamena(int index, int value) {
+        if (is_empty()) return false;
+        Node* p = first;
+        for (int i = 0; i < index; i++) {
+            p = p->next;
+            if (!p) return false;
+        }
+        p->val = value;
+        return true;
     }
 };
