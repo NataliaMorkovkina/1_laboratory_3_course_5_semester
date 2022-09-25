@@ -180,7 +180,7 @@ struct list {
     bool zamena(int index, int value) {
         if (is_empty()) return false;
         Node* p = first;
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i < index - 1; i++) {
             p = p->next;
             if (!p) return false;
         }
